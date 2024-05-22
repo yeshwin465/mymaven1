@@ -3,55 +3,45 @@ pipeline
     agent any
     stages
     {
-        stage('ContinuousDownload')
+        stage('contionous download')
         {
             steps
             {
-                git 'https://github.com/intelliqittrainings/maven.git'
+                git 'https://github.com/yeshwin465/maven.git'
             }
         }
-        stage('ContinuousBuild')
+        stage('contionous build')
         {
             steps
             {
                 sh 'mvn package'
             }
         }
-        stage('ContinuousDeployment')
+        stage('contionous deployment')
         {
             steps
             {
-               deploy adapters: [tomcat9(credentialsId: 'bfb67f1d-2f4e-430c-bb8d-30584116bd00', path: '', url: 'http://172.31.51.212:9090')], contextPath: 'test1', war: '**/*.war'
+                deploy adapters: [tomcat9(credentialsId: '4f4f05da-1c2a-400c-aca8-2bf1659cb538', path: '', url: 'http://172.31.46.51:8080')], contextPath: 'testapps', war: '**/*.war'
             }
         }
-        stage('ContinuousTesting')
+        stage('contionous testing')
         {
             steps
             {
-               git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
-               sh 'java -jar /home/ubuntu/.jenkins/workspace/DeclarativePipeline1/testing.jar'
+                git 'https://github.com/yeshwin465/FunctionalTesting.git'
+                sh 'java -jar /var/lib/jenkins/workspace/Declarativepipeline/testing.jar'
+            }
+            
+        }
+        stage('contionous delivery')
+        {
+            steps
+            {
+                deploy adapters: [tomcat9(credentialsId: '4f4f05da-1c2a-400c-aca8-2bf1659cb538', path: '', url: 'http://172.31.45.166:8080')], contextPath: 'prodapps', war: '**/*.war'
             }
         }
-       
+        
+        
+        
     }
-    
-    post
-    {
-        success
-        {
-            input message: 'Need approval from the DM!', submitter: 'srinivas'
-               deploy adapters: [tomcat9(credentialsId: 'bfb67f1d-2f4e-430c-bb8d-30584116bd00', path: '', url: 'http://172.31.50.204:9090')], contextPath: 'prod1', war: '**/*.war'
-        }
-        failure
-        {
-            mail bcc: '', body: 'Continuous Integration has failed', cc: '', from: '', replyTo: '', subject: 'CI Failed', to: 'selenium.saikrishna@gmail.com'
-        }
-       
-    }
-    
-    
-    
-    
-    
-    
 }
